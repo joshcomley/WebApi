@@ -96,6 +96,45 @@ namespace Microsoft.AspNet.OData.Query.Validators
         }
 
         /// <summary>
+        /// Override this method to restrict the 'count' query inside the filter query.
+        /// </summary>
+        /// <remarks>
+        /// This method is intended to be called from method overrides in subclasses. This method also supports unit-testing scenarios and is not intended to be called from user code.
+        /// Call the Validate method to validate a <see cref="FilterQueryOption"/> instance.
+        /// </remarks>
+        /// <param name="countNode"></param>
+        /// <param name="settings"></param>
+        public virtual void ValidateCountNode(CountNode countNode, ODataValidationSettings settings)
+        {
+            if (countNode == null)
+            {
+                throw Error.ArgumentNull(nameof(countNode));
+            }
+
+            if (settings == null)
+            {
+                throw Error.ArgumentNull(nameof(settings));
+            }
+
+            ValidateFunction("count", settings);
+            EnterLambda(settings);
+
+            try
+            {
+                ValidateQueryNode(countNode.Source, settings);
+
+                if (countNode.FilterOption != null)
+                {
+                    ValidateQueryNode(countNode.FilterOption.Expression, settings);
+                }
+            }
+            finally
+            {
+                ExitLambda();
+            }
+        }
+
+        /// <summary>
         /// Override this method to restrict the 'all' query inside the filter query.
         /// </summary>
         /// <remarks>
@@ -825,6 +864,10 @@ namespace Microsoft.AspNet.OData.Query.Validators
 
                 case QueryNodeKind.All:
                     ValidateAllNode(node as AllNode, settings);
+                    break;
+
+                case QueryNodeKind.Count:
+                    ValidateCountNode(node as CountNode, settings);
                     break;
 
                 case QueryNodeKind.SingleValueOpenPropertyAccess:

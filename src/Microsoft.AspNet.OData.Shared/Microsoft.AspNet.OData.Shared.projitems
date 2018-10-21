@@ -50,6 +50,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)EnableQueryAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ETagMessageHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ContainerBuilderExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\TypeExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formatter\DefaultODataETagHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formatter\Deserialization\ODataDeserializerContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formatter\IETagHandler.cs" />
@@ -74,6 +75,7 @@
       <DependentUpon>PropertyContainer.generated.tt</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Query\Expressions\SelectExpandWrapperOfT.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Query\OrderByCountNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RequestMethod.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IWebApiActionDescriptor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IWebApiActionMap.cs" />

@@ -108,7 +108,10 @@ namespace Microsoft.AspNet.OData.Query.Expressions
 
             if (property.PageSize != null || property.CountOption != null)
             {
-                memberBindings.Add(Expression.Bind(namedPropertyType.GetProperty("Collection"), property.Value));
+                if (!property.OnlyCount.HasValue || property.OnlyCount == false)
+                {
+                    memberBindings.Add(Expression.Bind(namedPropertyType.GetProperty("Collection"), property.Value));
+                }
 
                 if (property.PageSize != null)
                 {
@@ -119,6 +122,15 @@ namespace Microsoft.AspNet.OData.Query.Expressions
                 if (property.CountOption != null && property.CountOption.Value)
                 {
                     memberBindings.Add(Expression.Bind(namedPropertyType.GetProperty("TotalCount"), property.TotalCount));
+                }
+
+                if (property.OnlyCount.HasValue)
+                {
+                    var onlyCountProperty = namedPropertyType.GetProperty("OnlyCount");
+                    if (onlyCountProperty != null)
+                    {
+                        memberBindings.Add(Expression.Bind(onlyCountProperty, Expression.Constant(property.OnlyCount)));
+                    }
                 }
             }
             else

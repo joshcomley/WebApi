@@ -95,10 +95,10 @@ namespace Microsoft.AspNet.OData.Query
                 if (_filterClause == null)
                 {
                     _filterClause = _queryOptionParser.ParseFilter();
-                    SingleValueNode filterExpression = _filterClause.Expression.Accept(
-                        new ParameterAliasNodeTranslator(_queryOptionParser.ParameterAliasNodes)) as SingleValueNode;
-                    filterExpression = filterExpression ?? new ConstantNode(null);
-                    _filterClause = new FilterClause(filterExpression, _filterClause.RangeVariable);
+                    //SingleValueNode filterExpression = _filterClause.Expression.Accept(
+                    //    new ParameterAliasNodeTranslator(_queryOptionParser.ParameterAliasNodes)) as SingleValueNode;
+                    //filterExpression = filterExpression ?? new ConstantNode(null);
+                    //_filterClause = new FilterClause(filterExpression, _filterClause.RangeVariable);
                 }
 
                 return _filterClause;

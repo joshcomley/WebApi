@@ -24,6 +24,8 @@ namespace Microsoft.AspNet.OData.Query.Expressions
 
         public Expression Value { get; private set; }
 
+        public bool? OnlyCount { get; set; }
+
         public Expression TotalCount { get; set; }
 
         // Checks whether this property is null or not. This is required for expanded navigation properties that are null as entityframework cannot

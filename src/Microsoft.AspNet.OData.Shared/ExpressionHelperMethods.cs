@@ -14,6 +14,8 @@ namespace Microsoft.AspNet.OData
 {
     internal class ExpressionHelperMethods
     {
+        private static MethodInfo _enumerableCountWithPredicateMethod = GenericMethodOf(_ => Enumerable.LongCount<int>(default(IEnumerable<int>), null));
+        private static MethodInfo _countWithPredicateMethod = GenericMethodOf(_ => Queryable.LongCount<int>(default(IQueryable<int>), null));
         private static MethodInfo _orderByMethod = GenericMethodOf(_ => Queryable.OrderBy<int, int>(default(IQueryable<int>), default(Expression<Func<int, int>>)));
         private static MethodInfo _enumerableOrderByMethod = GenericMethodOf(_ => Enumerable.OrderBy<int, int>(default(IEnumerable<int>), default(Func<int, int>)));
         private static MethodInfo _orderByDescendingMethod = GenericMethodOf(_ => Queryable.OrderByDescending<int, int>(default(IQueryable<int>), default(Expression<Func<int, int>>)));
@@ -83,6 +85,16 @@ namespace Microsoft.AspNet.OData
         private static MethodInfo _enumerableCountMethod = GenericMethodOf(_ => Enumerable.LongCount<int>(default(IEnumerable<int>)));
 
         private static MethodInfo _safeConvertToDecimalMethod = typeof(ExpressionHelperMethods).GetMethod("SafeConvertToDecimal");
+
+        public static MethodInfo QueryableCountWithPredicateGeneric
+        {
+            get { return _countWithPredicateMethod; }
+        }
+
+        public static MethodInfo EnumerableCountWithPredicateGeneric
+        {
+            get { return _enumerableCountWithPredicateMethod; }
+        }
 
         public static MethodInfo QueryableOrderByGeneric
         {
