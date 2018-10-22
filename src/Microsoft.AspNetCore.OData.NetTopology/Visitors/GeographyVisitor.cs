@@ -10,17 +10,27 @@ namespace Microsoft.AspNetCore.OData.NetTopology.Visitors
 
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            if (node.Method != ClrCanonicalFunctions.GeoDistance)
+            if (node.Method == ClrCanonicalFunctions.GeoDistance)
             {
-                return base.VisitMethodCall(node);
+                var args = ExpressionBinderBase.ExtractValueFromNullableArguments(node.Arguments).ToArray();
+                var methodCallExpression = Expression.Call(
+                    MemberVisitor.Visit(args.First()),
+                    GeographyMethods.GeoDistanceEf,
+                    MemberVisitor.Visit(args.Skip(1).First()));
+                return methodCallExpression;
             }
 
-            var args = ExpressionBinderBase.ExtractValueFromNullableArguments(node.Arguments).ToArray();
-            var methodCallExpression = Expression.Call(
-                MemberVisitor.Visit(args.First()),
-                GeographyMethods.GeoDistanceEf,
-                MemberVisitor.Visit(args.Skip(1).First()));
-            return methodCallExpression;
+            if (node.Method == ClrCanonicalFunctions.GeoIntersects)
+            {
+                var args = ExpressionBinderBase.ExtractValueFromNullableArguments(node.Arguments).ToArray();
+                var methodCallExpression = Expression.Call(
+                    MemberVisitor.Visit(args.First()),
+                    GeographyMethods.GeoIntersectsEf,
+                    MemberVisitor.Visit(args.Skip(1).First()));
+                return methodCallExpression;
+            }
+
+            return base.VisitMethodCall(node);
 
         }
     }

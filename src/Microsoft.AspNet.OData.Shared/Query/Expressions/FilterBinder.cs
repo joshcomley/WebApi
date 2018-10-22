@@ -806,7 +806,7 @@ namespace Microsoft.AspNet.OData.Query.Expressions
         {
             Contract.Assert("geo.intersects" == node.Name);
             Expression[] arguments = BindArguments(node.Parameters);
-            Contract.Assert(arguments.Length == 2 && arguments[0].Type == typeof(GeographyPoint) && arguments[1].Type == typeof(GeographyPolygon));
+            Contract.Assert(arguments.Length == 2 && typeof(Geography).IsAssignableFrom(arguments[0].Type) && typeof(Geography).IsAssignableFrom(arguments[1].Type));
             return MakeFunctionCall(ClrCanonicalFunctions.GeoIntersects, arguments);
         }
 

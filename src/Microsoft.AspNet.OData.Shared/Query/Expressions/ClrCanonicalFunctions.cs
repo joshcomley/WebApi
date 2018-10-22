@@ -15,7 +15,7 @@ namespace Microsoft.AspNet.OData.Query.Expressions
     internal class ClrCanonicalFunctions
     {
         private static GeographyPoint _defaultPoint = default(GeographyPoint);
-        private static Geometry _defaultGeometry = default(Geometry);
+        private static Geography _defaultGeography = default(Geography);
         private static string _defaultString = default(string);
         private static Enum _defaultEnum = default(Enum);
 
@@ -50,7 +50,7 @@ namespace Microsoft.AspNet.OData.Query.Expressions
         internal const string GeoIntersectsFunctionName = "geo.intersects";
 
         // geo functions
-        public static readonly MethodInfo GeoIntersects = MethodOf(_ => _defaultGeometry.Intersects(default(Geometry)));
+        public static readonly MethodInfo GeoIntersects = MethodOf(_ => _defaultGeography.Intersects(default(Geography)));
         public static readonly MethodInfo GeoDistance = MethodOf(_ => _defaultPoint.Distance(default(Geography)));
 
         // string functions

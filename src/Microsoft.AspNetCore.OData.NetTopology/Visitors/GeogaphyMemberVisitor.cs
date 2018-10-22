@@ -33,11 +33,12 @@ namespace Microsoft.AspNetCore.OData.NetTopology.Visitors
                 {
                     if (container.Property is GeographyPoint geographyPoint)
                     {
+                        var ntsPoint = geographyPoint.ToNtsPoint();
                         var result = Expression.Property(
                             VisitConstant(
                                 Expression.Constant(
                                     new LinqParameterContainer.TypedLinqParameterContainer<IPoint>(
-                                        geographyPoint.ToNtsPoint()))),
+                                        ntsPoint))),
                             node.Member.Name);
                         return result;
                     }
