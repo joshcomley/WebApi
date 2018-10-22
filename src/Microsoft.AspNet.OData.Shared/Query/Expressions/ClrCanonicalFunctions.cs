@@ -8,11 +8,14 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.OData.Edm;
+using Microsoft.Spatial;
 
 namespace Microsoft.AspNet.OData.Query.Expressions
 {
     internal class ClrCanonicalFunctions
     {
+        private static GeographyPoint _defaultPoint = default(GeographyPoint);
+        private static Geometry _defaultGeometry = default(Geometry);
         private static string _defaultString = default(string);
         private static Enum _defaultEnum = default(Enum);
 
@@ -43,6 +46,12 @@ namespace Microsoft.AspNet.OData.Query.Expressions
         internal const string DateFunctionName = "date";
         internal const string TimeFunctionName = "time";
         internal const string NowFunctionName = "now";
+        internal const string GeoDistanceFunctionName = "geo.distance";
+        internal const string GeoIntersectsFunctionName = "geo.intersects";
+
+        // geo functions
+        public static readonly MethodInfo GeoIntersects = MethodOf(_ => _defaultGeometry.Intersects(default(Geometry)));
+        public static readonly MethodInfo GeoDistance = MethodOf(_ => _defaultPoint.Distance(default(Geography)));
 
         // string functions
         public static readonly MethodInfo StartsWith = MethodOf(_ => _defaultString.StartsWith(default(string)));
@@ -131,7 +140,7 @@ namespace Microsoft.AspNet.OData.Query.Expressions
         public static readonly MethodInfo ToOffsetFunction = typeof(DateTimeOffset).GetMethod("ToOffset", BindingFlags.Instance | BindingFlags.Public);
         public static readonly MethodInfo GetUtcOffset = typeof(TimeZoneInfo).GetMethod("GetUtcOffset", new[] { typeof(DateTime) });
 
-        private static MethodInfo MethodOf<TReturn>(Expression<Func<object, TReturn>> expression)
+        protected static MethodInfo MethodOf<TReturn>(Expression<Func<object, TReturn>> expression)
         {
             return MethodOf(expression as Expression);
         }
