@@ -17,8 +17,6 @@ namespace AspNetCoreODataSample.Web.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Movie>().Ignore(m => m.Polygon);
-            modelBuilder.Entity<Movie>().Ignore(m => m.LocationPoint);
             modelBuilder.Entity<Person>().HasOne(p => p.FavoriteMovie).WithMany(m => m.People);
             modelBuilder.Entity<Movie>().Property(m => m.Price).HasColumnType("NUMERIC");
             base.OnModelCreating(modelBuilder);

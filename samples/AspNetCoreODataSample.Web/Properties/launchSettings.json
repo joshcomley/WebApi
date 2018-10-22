@@ -11,7 +11,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "efcore/Movies?$filter=geo.distance(Point,geography%27SRID=4326;POINT%20(12.345%207.890)%27)%20gt%201000",
+      "launchUrl": "efcore/Movies?$filter=geo.intersects(Point,geography%27SRID=4326;POLYGON((-80.190%2025.774,-66.118%2018.466,-64.757%2032.321,-80.190%2025.774))%27)",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
