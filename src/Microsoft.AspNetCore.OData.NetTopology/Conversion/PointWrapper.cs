@@ -38,15 +38,6 @@ namespace Microsoft.AspNetCore.OData.NetTopology.Conversion
         }
 
         /// <summary>
-        ///     Cast PointWrapper to GeographyLineString
-        /// </summary>
-        /// <param name="wrapper">The PointWrapper.</param>
-        public static implicit operator GeographyLineString(PointWrapper wrapper)
-        {
-            return wrapper?._point?.ToGeographyLineString();
-        }
-
-        /// <summary>
         ///     Cast PointWrapper to NTS Point
         /// </summary>
         /// <param name="wrapper">The PointWrapper.</param>

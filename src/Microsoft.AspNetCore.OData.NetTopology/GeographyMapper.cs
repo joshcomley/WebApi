@@ -62,6 +62,25 @@ namespace Microsoft.AspNetCore.OData.NetTopology
         }
 
         /// <summary>
+        ///     Map an OData GeographyLineString to an EF NTS ILineString
+        /// </summary>
+        /// <typeparam name="T">The entity type.</typeparam>
+        /// <param name="builder">The ODataModelBuilder.</param>
+        /// <param name="odataProperty">The Microsoft.Spatial GeographyLineString lambda.</param>
+        /// <param name="ntsProperty">The NTS LineString lambda.</param>
+        /// <returns>The ODataModelBuilder.</returns>
+        public static ODataModelBuilder MapSpatial<T>(
+            this ODataModelBuilder builder,
+            Expression<Func<T, GeographyLineString>> odataProperty,
+            Expression<Func<T, ILineString>> ntsProperty)
+            where T : class
+        {
+            var odataPropertyInfo = PropertySelectorVisitor.GetSelectedProperty(odataProperty);
+            var ntsPropertyInfo = PropertySelectorVisitor.GetSelectedProperty(ntsProperty);
+            return builder.MapSpatial(odataPropertyInfo, ntsPropertyInfo);
+        }
+
+        /// <summary>
         ///     Map an OData GeographyPoint to an EF NTS IPoint
         /// </summary>
         /// <param name="builder">The ODataModelBuilder.</param>

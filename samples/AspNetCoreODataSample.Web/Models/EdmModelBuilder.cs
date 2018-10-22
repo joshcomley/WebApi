@@ -19,6 +19,7 @@ namespace AspNetCoreODataSample.Web.Models
                 builder.EntitySet<Movie>("Movies");
                 builder.MapSpatial<Movie>(m => m.LocationPoint, m => m.Point);
                 builder.MapSpatial<Movie>(m => m.Polygon, m => m.PolygonDb);
+                builder.MapSpatial<Movie>(m => m.LineStringEdm, m => m.LineString);
                 _edmModel = builder.GetEdmModel();
             }
             return _edmModel;

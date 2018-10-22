@@ -14,6 +14,7 @@ namespace Microsoft.AspNet.OData.Query.Expressions
 {
     internal class ClrCanonicalFunctions
     {
+        private static GeographyLineString _defaultLineString = default(GeographyLineString);
         private static GeographyPoint _defaultPoint = default(GeographyPoint);
         private static Geography _defaultGeography = default(Geography);
         private static string _defaultString = default(string);
@@ -48,10 +49,12 @@ namespace Microsoft.AspNet.OData.Query.Expressions
         internal const string NowFunctionName = "now";
         internal const string GeoDistanceFunctionName = "geo.distance";
         internal const string GeoIntersectsFunctionName = "geo.intersects";
+        internal const string GeoLengthFunctionName = "geo.length";
 
         // geo functions
         public static readonly MethodInfo GeoIntersects = MethodOf(_ => _defaultGeography.Intersects(default(Geography)));
         public static readonly MethodInfo GeoDistance = MethodOf(_ => _defaultPoint.Distance(default(Geography)));
+        public static readonly MethodInfo GeoLength = MethodOf(_ => _defaultLineString.Length());
 
         // string functions
         public static readonly MethodInfo StartsWith = MethodOf(_ => _defaultString.StartsWith(default(string)));

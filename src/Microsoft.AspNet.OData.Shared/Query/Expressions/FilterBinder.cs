@@ -790,6 +790,9 @@ namespace Microsoft.AspNet.OData.Query.Expressions
                 case ClrCanonicalFunctions.GeoIntersectsFunctionName:
                     return BindGeoIntersects(node);
 
+                case ClrCanonicalFunctions.GeoLengthFunctionName:
+                    return BindGeoLength(node);
+
                 default:
                     // Get Expression of custom binded method.
                     Expression expression = BindCustomMethodExpressionOrNull(node);
@@ -816,6 +819,14 @@ namespace Microsoft.AspNet.OData.Query.Expressions
             Expression[] arguments = BindArguments(node.Parameters);
             Contract.Assert(arguments.Length == 2 && arguments[0].Type == typeof(GeographyPoint) && arguments[1].Type == typeof(GeographyPoint));
             return MakeFunctionCall(ClrCanonicalFunctions.GeoDistance, arguments);
+        }
+
+        private Expression BindGeoLength(SingleValueFunctionCallNode node)
+        {
+            Contract.Assert("geo.length" == node.Name);
+            Expression[] arguments = BindArguments(node.Parameters);
+            Contract.Assert(arguments.Length == 1 && arguments[0].Type == typeof(GeographyLineString));
+            return MakeFunctionCall(ClrCanonicalFunctions.GeoLength, arguments);
         }
 
         private Expression BindCastSingleValue(SingleValueFunctionCallNode node)

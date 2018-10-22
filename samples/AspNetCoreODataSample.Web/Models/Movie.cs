@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using GeoAPI.Geometries;
 using Microsoft.AspNetCore.OData.NetTopology.Conversion;
 using Microsoft.Spatial;
 using NetTopologySuite.Geometries;
@@ -41,6 +40,21 @@ namespace AspNetCoreODataSample.Web.Models
         {
             get => _polygonWrapper;
             set => _polygonWrapper = value;
+        }
+
+
+        private LineStringWrapper _lineStringWrapper;
+        public LineString LineString
+        {
+            get => _lineStringWrapper;
+            set => _lineStringWrapper = value;
+        }
+
+        [NotMapped]
+        public GeographyLineString LineStringEdm
+        {
+            get => _lineStringWrapper;
+            set => _lineStringWrapper = value;
         }
 
         public string Title { get; set; }

@@ -1,11 +1,10 @@
-﻿using System.Linq.Expressions;
+﻿using System;
+using System.Linq.Expressions;
 using System.Reflection;
-using GeoAPI.Geometries;
 using Microsoft.AspNet.OData.Query.Expressions;
 using Microsoft.AspNetCore.OData.NetTopology.Conversion;
 using Microsoft.AspNetCore.OData.NetTopology.Mapping;
 using Microsoft.Spatial;
-using NetTopologySuite.Geometries;
 
 namespace Microsoft.AspNetCore.OData.NetTopology.Visitors
 {
@@ -13,7 +12,7 @@ namespace Microsoft.AspNetCore.OData.NetTopology.Visitors
     {
         protected override Expression VisitMember(MemberExpression node)
         {
-            if (node.Member is PropertyInfo info && node.Type == typeof(GeographyPoint) &&
+            if (node.Member is PropertyInfo info && 
                 !typeof(LinqParameterContainer).IsAssignableFrom(node.Expression.Type))
             {
                 var mapping = GeographyMapping.Instance.GetMappedProperty(info);
@@ -31,18 +30,7 @@ namespace Microsoft.AspNetCore.OData.NetTopology.Visitors
                          constantExpression.Value is LinqParameterContainer.TypedLinqParameterContainer<GeographyPoint>
                              container:
                 {
-                    if (container.Property is GeographyPoint geographyPoint)
-                    {
-                        var ntsPoint = geographyPoint.ToNtsPoint();
-                        var result = Expression.Property(
-                            VisitConstant(
-                                Expression.Constant(
-                                    new LinqParameterContainer.TypedLinqParameterContainer<IPoint>(
-                                        ntsPoint))),
-                            node.Member.Name);
-                        return result;
-                    }
-                    break;
+                    return Convert(node, container, p => p.ToNtsPoint());
                 }
                 case ConstantExpression expression
                     when expression.Type ==
@@ -50,18 +38,38 @@ namespace Microsoft.AspNetCore.OData.NetTopology.Visitors
                          expression.Value is LinqParameterContainer.TypedLinqParameterContainer<GeographyPolygon>
                              container:
                 {
-                    var geographyPolygon = container.Property as GeographyPolygon;
-                    var ntsPolygon = geographyPolygon.ToNtsPolygon();
-                    var result = Expression.Property(
-                        VisitConstant(
-                            Expression.Constant(
-                                new LinqParameterContainer.TypedLinqParameterContainer<Polygon>(ntsPolygon))),
-                        node.Member.Name);
-                    return result;
+                    return Convert(node, container, p => p.ToNtsPolygon());
+                }
+                case ConstantExpression expression
+                    when expression.Type ==
+                         typeof(LinqParameterContainer.TypedLinqParameterContainer<GeographyLineString>) &&
+                         expression.Value is LinqParameterContainer.TypedLinqParameterContainer<GeographyLineString>
+                             container:
+                {
+                    return Convert(node, container, p => p.ToNtsLineString());
                 }
             }
 
             return base.VisitMember(node);
+        }
+
+        private Expression Convert<TEdm, TNts>(
+            MemberExpression node,
+            LinqParameterContainer.TypedLinqParameterContainer<TEdm> container,
+            Func<TEdm, TNts> convert)
+        {
+            if (container.Property is TEdm geographyPoint)
+            {
+                var ntsPoint = convert(geographyPoint);
+                var result = Expression.Property(
+                    VisitConstant(
+                        Expression.Constant(
+                            new LinqParameterContainer.TypedLinqParameterContainer<TNts>(
+                                ntsPoint))),
+                    node.Member.Name);
+                return result;
+            }
+            return null;
         }
     }
 }

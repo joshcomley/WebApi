@@ -15,7 +15,8 @@ namespace Microsoft.AspNet.OData
             if (node is SingleValueFunctionCallNode single)
             {
                 if (single.Name == ClrCanonicalFunctions.GeoDistanceFunctionName ||
-                    single.Name == ClrCanonicalFunctions.GeoIntersectsFunctionName)
+                    single.Name == ClrCanonicalFunctions.GeoIntersectsFunctionName ||
+                    single.Name == ClrCanonicalFunctions.GeoLengthFunctionName)
                 {
                     var visit = GeographyVisitor.Visit(expression);
                     return visit;

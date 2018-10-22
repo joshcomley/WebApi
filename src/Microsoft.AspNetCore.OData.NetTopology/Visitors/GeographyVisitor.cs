@@ -30,6 +30,16 @@ namespace Microsoft.AspNetCore.OData.NetTopology.Visitors
                 return methodCallExpression;
             }
 
+            if (node.Method == ClrCanonicalFunctions.GeoLength)
+            {
+                var args = ExpressionBinderBase.ExtractValueFromNullableArguments(node.Arguments).ToArray();
+                var arg = MemberVisitor.Visit(args.First());
+                var methodCallExpression = Expression.Property(
+                    arg,
+                    GeographyMethods.GeoLengthEf.Name);
+                return methodCallExpression;
+            }
+
             return base.VisitMethodCall(node);
 
         }
