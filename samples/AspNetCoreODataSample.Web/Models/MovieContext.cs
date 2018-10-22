@@ -13,5 +13,15 @@ namespace AspNetCoreODataSample.Web.Models
         }
 
         public DbSet<Movie> Movies { get; set; }
+        public DbSet<Person> People { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Movie>().Ignore(m => m.Polygon);
+            modelBuilder.Entity<Movie>().Ignore(m => m.LocationPoint);
+            modelBuilder.Entity<Person>().HasOne(p => p.FavoriteMovie).WithMany(m => m.People);
+            modelBuilder.Entity<Movie>().Property(m => m.Price).HasColumnType("NUMERIC");
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }

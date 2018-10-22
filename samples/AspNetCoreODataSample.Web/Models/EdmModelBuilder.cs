@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using Microsoft.AspNet.OData.Builder;
+using Microsoft.AspNetCore.OData.NetTopology;
 using Microsoft.OData.Edm;
 
 namespace AspNetCoreODataSample.Web.Models
@@ -16,9 +17,10 @@ namespace AspNetCoreODataSample.Web.Models
             {
                 var builder = new ODataConventionModelBuilder();
                 builder.EntitySet<Movie>("Movies");
+                builder.MapSpatial<Movie>(m => m.LocationPoint, m => m.Point);
+                builder.MapSpatial<Movie>(m => m.Polygon, m => m.PolygonDb);
                 _edmModel = builder.GetEdmModel();
             }
-
             return _edmModel;
         }
 

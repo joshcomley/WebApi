@@ -17,6 +17,7 @@ namespace AspNetCoreODataSample.Web.Controllers
             {
                 FirstName = keyFirstName,
                 LastName = keyLastName,
+                FavoriteMovieId = 1,
                 DynamicProperties = new Dictionary<string, object>
                 {
                     { "abc", "abcValue" }
