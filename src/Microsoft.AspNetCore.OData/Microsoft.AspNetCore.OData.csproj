@@ -4,6 +4,7 @@
   </PropertyGroup>
   <Import Project="..\..\tools\WebStack.settings.targets" />
   <PropertyGroup>
+	<PackageVersion>7.2.0-pre-0001</PackageVersion>
     <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
     <CodeAnalysisRuleSet>..\Strict.ruleset</CodeAnalysisRuleSet>
     <DefineConstants>$(DefineConstants);ASPNETODATA;ASPNETWEBAPI;NETCORE;NETCORE2x;NOT_CLS_COMPLIANT</DefineConstants>
@@ -18,9 +19,9 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.0.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
-    <PackageReference Include="Microsoft.OData.Core" Version="8.0.3.2-0009-1-Debug" />
-    <PackageReference Include="Microsoft.OData.Edm" Version="8.0.3.2-0009-1-Debug" />
-    <PackageReference Include="Microsoft.Spatial" Version="8.0.3.2-0009-1-Debug" />
+    <PackageReference Include="Microsoft.OData.Core" Version="8.0.3.2-0009-0-Release" />
+    <PackageReference Include="Microsoft.OData.Edm" Version="8.0.3.2-0009-0-Release" />
+    <PackageReference Include="Microsoft.Spatial" Version="8.0.3.2-0009-0-Release" />
     <PackageReference Include="System.Collections.Concurrent" Version="4.3.0" />
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.3.0" />
