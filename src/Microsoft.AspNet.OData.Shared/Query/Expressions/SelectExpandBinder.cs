@@ -100,7 +100,7 @@ namespace Microsoft.AspNet.OData.Query.Expressions
         }
 
         internal Expression ProjectAsWrapper(Expression source, SelectExpandClause selectExpandClause,
-            IEdmEntityType entityType, IEdmNavigationSource navigationSource, ExpandedNavigationSelectItem expandedItem = null,
+            IEdmEntityType entityType, IEdmNavigationSource navigationSource, ExpandedReferenceSelectItem expandedItem = null,
             int? modelBoundPageSize = null)
         {
             Type elementType;
@@ -339,7 +339,7 @@ namespace Microsoft.AspNet.OData.Query.Expressions
             // source => new Wrapper { Container =  new PropertyContainer { .... } }
             if (selectExpandClause != null)
             {
-                Dictionary<IEdmNavigationProperty, ExpandedNavigationSelectItem> propertiesToExpand = GetPropertiesToExpandInQuery(selectExpandClause);
+                Dictionary<IEdmNavigationProperty, ExpandedReferenceSelectItem> propertiesToExpand = GetPropertiesToExpandInQuery(selectExpandClause);
                 ISet<IEdmStructuralProperty> autoSelectedProperties;
 
                 ISet<IEdmStructuralProperty> propertiesToInclude = GetPropertiesToIncludeInQuery(selectExpandClause, entityType, navigationSource, _model, out autoSelectedProperties);
@@ -381,10 +381,12 @@ namespace Microsoft.AspNet.OData.Query.Expressions
             return selectExpandClause.SelectedItems.OfType<PathSelectItem>().Any(x => x.SelectedPath.LastSegment is DynamicPathSegment);
         }
 
-        private Expression CreateTotalCountExpression(Expression source, ExpandedNavigationSelectItem expandItem)
+        private Expression CreateTotalCountExpression(Expression source, ExpandedReferenceSelectItem expandItem)
         {
             Expression countExpression = Expression.Constant(null, typeof(long?));
-            if (expandItem.CountOption == null || !expandItem.CountOption.Value)
+            if ((expandItem.CountOption == null && !(expandItem is ExpandedCountSelectItem)) ||
+                (expandItem.CountOption == null || !expandItem.CountOption.Value)
+                )
             {
                 return countExpression;
             }
@@ -424,16 +426,20 @@ namespace Microsoft.AspNet.OData.Query.Expressions
 
         [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Class coupling acceptable")]
         private Expression BuildPropertyContainer(IEdmEntityType elementType, Expression source,
-            Dictionary<IEdmNavigationProperty, ExpandedNavigationSelectItem> propertiesToExpand,
+            Dictionary<IEdmNavigationProperty, ExpandedReferenceSelectItem> propertiesToExpand,
             ISet<IEdmStructuralProperty> propertiesToInclude, ISet<IEdmStructuralProperty> autoSelectedProperties, bool isSelectingOpenTypeSegments)
         {
             IList<NamedPropertyExpression> includedProperties = new List<NamedPropertyExpression>();
 
-            foreach (KeyValuePair<IEdmNavigationProperty, ExpandedNavigationSelectItem> kvp in propertiesToExpand)
+            foreach (KeyValuePair<IEdmNavigationProperty, ExpandedReferenceSelectItem> kvp in propertiesToExpand)
             {
                 IEdmNavigationProperty propertyToExpand = kvp.Key;
-                ExpandedNavigationSelectItem expandItem = kvp.Value;
-                SelectExpandClause projection = expandItem.SelectAndExpand;
+                ExpandedReferenceSelectItem expandItem = kvp.Value;
+                SelectExpandClause projection = null;
+                if (kvp.Value is ExpandedNavigationSelectItem)
+                {
+                    projection = (kvp.Value as ExpandedNavigationSelectItem).SelectAndExpand;
+                }
 
                 ModelBoundQuerySettings querySettings = EdmLibHelpers.GetModelBoundQuerySettings(propertyToExpand,
                     propertyToExpand.ToEntityType(),
@@ -472,6 +478,7 @@ namespace Microsoft.AspNet.OData.Query.Expressions
                         }
                     }
 
+                    propertyExpression.OnlyCount = expandItem is ExpandedCountSelectItem;
                     propertyExpression.TotalCount = countExpression;
                     propertyExpression.CountOption = expandItem.CountOption;
                 }
@@ -570,7 +577,7 @@ namespace Microsoft.AspNet.OData.Query.Expressions
         }
 
         // new CollectionWrapper<ElementType> { Instance = source.Select((ElementType element) => new Wrapper { }) }
-        private Expression ProjectCollection(Expression source, Type elementType, SelectExpandClause selectExpandClause, IEdmEntityType entityType, IEdmNavigationSource navigationSource, ExpandedNavigationSelectItem expandedItem, int? modelBoundPageSize)
+        private Expression ProjectCollection(Expression source, Type elementType, SelectExpandClause selectExpandClause, IEdmEntityType entityType, IEdmNavigationSource navigationSource, ExpandedReferenceSelectItem expandedItem, int? modelBoundPageSize)
         {
             ParameterExpression element = Expression.Parameter(elementType);
 
@@ -737,9 +744,9 @@ namespace Microsoft.AspNet.OData.Query.Expressions
             return ExpressionHelperMethods.EnumerableSelectGeneric.MakeGenericMethod(elementType, resultType);
         }
 
-        private static Dictionary<IEdmNavigationProperty, ExpandedNavigationSelectItem> GetPropertiesToExpandInQuery(SelectExpandClause selectExpandClause)
+        private static Dictionary<IEdmNavigationProperty, ExpandedReferenceSelectItem> GetPropertiesToExpandInQuery(SelectExpandClause selectExpandClause)
         {
-            Dictionary<IEdmNavigationProperty, ExpandedNavigationSelectItem> properties = new Dictionary<IEdmNavigationProperty, ExpandedNavigationSelectItem>();
+            Dictionary<IEdmNavigationProperty, ExpandedReferenceSelectItem> properties = new Dictionary<IEdmNavigationProperty, ExpandedReferenceSelectItem>();
 
             foreach (SelectItem selectItem in selectExpandClause.SelectedItems)
             {
@@ -754,6 +761,12 @@ namespace Microsoft.AspNet.OData.Query.Expressions
                     }
 
                     properties[navigationSegment.NavigationProperty] = expandItem;
+                }
+                else if (selectItem is ExpandedCountSelectItem)
+                {
+                    var countItem = selectItem as ExpandedCountSelectItem;
+                    NavigationPropertySegment navigationSegment = countItem.PathToNavigationProperty.LastSegment as NavigationPropertySegment;
+                    properties[navigationSegment.NavigationProperty] = countItem;
                 }
             }
 

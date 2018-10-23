@@ -42,6 +42,12 @@ namespace AspNetCoreODataSample.Web.Controllers
                 _context.Movies.Add(conanMovie);
                 _context.Movies.Add(dieHardMovie);
                 _context.SaveChanges();
+            }
+
+            if (!_context.MovieStars.Any())
+            {
+                var conanMovie = _context.Movies.Single(m => m.Title == "Conan");
+                var dieHardMovie = _context.Movies.Single(m => m.Title == "Die Hard");
                 MovieStar s = new MovieStar
                 {
                     FirstName = "Arnold",

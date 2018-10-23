@@ -12,6 +12,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNet.OData.Adapters;
 using Microsoft.AspNet.OData.Common;
+using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Formatter;
 using Microsoft.AspNet.OData.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -224,6 +225,76 @@ namespace Microsoft.AspNet.OData.Query.Expressions
             return expression;
         }
 
+        private Expression BindCountNode(CountNode node)
+        {
+            Expression source = Bind(node.Source);
+            Expression countExpression = Expression.Constant(null, typeof(long?));
+            Type elementType;
+            if (!source.Type.IsCollection(out elementType))
+            {
+                return countExpression;
+            }
+
+            Expression filterPredicate = null;
+            // TODO: Once https://github.com/OData/odata.net/pull/1298 has been accepted
+            //if (node.FilterOption != null)
+            //{
+            //    filterPredicate = FilterBinder.Bind(node.FilterOption, elementType, Model, InternalAssembliesResolver, QuerySettings);
+            //}
+
+            MethodInfo countMethod;
+
+            if (typeof(IQueryable).IsAssignableFrom(source.Type))
+            {
+                if (filterPredicate != null)
+                {
+                    countMethod =
+                        ExpressionHelperMethods.QueryableCountWithPredicateGeneric;
+                }
+                else
+                {
+                    countMethod = ExpressionHelperMethods.QueryableCountGeneric;
+                }
+            }
+            else
+            {
+                if (filterPredicate != null)
+                {
+                    countMethod =
+                        ExpressionHelperMethods.EnumerableCountWithPredicateGeneric;
+                }
+                else
+                {
+                    countMethod = ExpressionHelperMethods.EnumerableCountGeneric;
+                }
+            }
+
+            countMethod = countMethod.MakeGenericMethod(elementType);
+
+            // call Count() method.
+            if (filterPredicate != null)
+            {
+                countExpression = Expression.Call(null, countMethod, new[] { source, filterPredicate });
+            }
+            else
+            {
+                countExpression = Expression.Call(null, countMethod, new[] { source });
+            }
+
+            if (QuerySettings.HandleNullPropagation == HandleNullPropagationOption.True)
+            {
+                // source == null ? null : countExpression
+                return Expression.Condition(
+                       test: Expression.Equal(source, Expression.Constant(null)),
+                       ifTrue: Expression.Constant(null, typeof(long?)),
+                       ifFalse: ExpressionHelpers.ToNullable(countExpression));
+            }
+            else
+            {
+                return countExpression;
+            }
+        }
+        
         /// <summary>
         /// Binds a <see cref="SingleValueOpenPropertyAccessNode"/> to create a LINQ <see cref="Expression"/> that
         /// represents the semantics of the <see cref="SingleValueOpenPropertyAccessNode"/>.
@@ -1472,6 +1543,11 @@ namespace Microsoft.AspNet.OData.Query.Expressions
         /// <returns>The LINQ <see cref="Expression"/> created.</returns>
         private Expression BindSingleValueNode(SingleValueNode node)
         {
+            CountNode countNode = node as CountNode;
+            if (countNode != null)
+            {
+                return BindCountNode(countNode);
+            }
             switch (node.Kind)
             {
                 case QueryNodeKind.BinaryOperator:
