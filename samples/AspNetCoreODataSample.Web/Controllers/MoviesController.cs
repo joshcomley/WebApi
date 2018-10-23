@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using AspNetCoreODataSample.Web.Models;
 using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Spatial;
 using Microsoft.AspNetCore.Mvc;
+using NetTopologySuite.Geometries;
 
 namespace AspNetCoreODataSample.Web.Controllers
 {
@@ -20,14 +22,15 @@ namespace AspNetCoreODataSample.Web.Controllers
         {
             _context = context;
 
-            if (_context.Movies.Count() == 0)
+            if (!_context.Movies.Any())
             {
                 Movie conanMovie = new Movie
                 {
                     Title = "Conan",
                     ReleaseDate = new DateTimeOffset(new DateTime(2017, 3, 3)),
                     Genre = Genre.Comedy,
-                    Price = 1.99m
+                    Price = 1.99m,
+                    Point = (Point)GeoHelper.CreatePoint(52.2670551, -2.137972)
                 };
                 Movie dieHardMovie = new Movie
                 {
@@ -80,28 +83,18 @@ namespace AspNetCoreODataSample.Web.Controllers
         [EnableQuery]
         public IActionResult Get()
         {
-            if (Request.Path.Value.Contains("efcore"))
-            {
-                return Ok(_context.Movies);
-            }
-            else
-            {
-                return Ok(_inMemoryMovies);
-            }
+            return Request.Path.Value.Contains("efcore") 
+                ? Ok(_context.Movies) 
+                : Ok(_inMemoryMovies);
         }
 
         [EnableQuery]
-        public IActionResult Get(int key)
+        public IActionResult Get2(int key)
         {
             Movie m;
-            if (Request.Path.Value.Contains("efcore"))
-            {
-                m = _context.Movies.FirstOrDefault(c => c.ID == key);
-            }
-            else
-            {
-                m = _inMemoryMovies.FirstOrDefault(c => c.ID == key);
-            }
+            m = Request.Path.Value.Contains("efcore") 
+                ? _context.Movies.FirstOrDefault(c => c.ID == key)
+                : _inMemoryMovies.FirstOrDefault(c => c.ID == key);
 
             if (m == null)
             {
@@ -109,6 +102,30 @@ namespace AspNetCoreODataSample.Web.Controllers
             }
 
             return Ok(m);
+        }
+
+        [EnableQuery]
+        public IActionResult Get(int key)
+        {
+            var m = Request.Path.Value.Contains("efcore") 
+                ? _context.Movies.Where(c => c.ID == key) 
+                : _inMemoryMovies.Where(c => c.ID == key).AsQueryable();
+
+            if (!m.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(new SingleResult<Movie>(m));
+        }
+
+        [HttpPost]
+        public IActionResult Patch(int key, [FromBody]Delta<Movie> delta)
+        {
+            var existing = _context.Movies.Find(key);
+            delta.Patch(existing);
+            _context.SaveChanges();
+            return Ok();
         }
     }
 }

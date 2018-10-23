@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData;
 using Microsoft.OData.Edm;
 using Microsoft.OData.UriParser;
+using Microsoft.Spatial;
 
 namespace Microsoft.AspNet.OData.Query.Expressions
 {
@@ -189,18 +190,38 @@ namespace Microsoft.AspNet.OData.Query.Expressions
             CollectionNode collectionNode = node as CollectionNode;
             SingleValueNode singleValueNode = node as SingleValueNode;
 
+            Expression result;
             if (collectionNode != null)
             {
-                return BindCollectionNode(collectionNode);
+                result = BindCollectionNode(collectionNode);
             }
             else if (singleValueNode != null)
             {
-                return BindSingleValueNode(singleValueNode);
+                result = BindSingleValueNode(singleValueNode);
             }
             else
             {
                 throw Error.NotSupported(SRResources.QueryNodeBindingNotSupported, node.Kind, typeof(FilterBinder).Name);
             }
+            return ApplyHooks(result, node);
+        }
+
+        private Expression ApplyHooks(Expression expression, QueryNode node)
+        {
+            if (RequestContainer != null)
+            {
+                var hookRegistrar = ExpressionHookRegistrar.Instance;
+                var hooks = hookRegistrar.For(Model);
+                if (hooks != null)
+                {
+                    foreach (var hook in hooks)
+                    {
+                        expression = hook.Hook(expression, node);
+                    }
+                }
+            }
+
+            return expression;
         }
 
         /// <summary>
@@ -763,6 +784,15 @@ namespace Microsoft.AspNet.OData.Query.Expressions
                 case ClrCanonicalFunctions.NowFunctionName:
                     return BindNow(node);
 
+                case ClrCanonicalFunctions.GeoDistanceFunctionName:
+                    return BindGeoDistance(node);
+
+                case ClrCanonicalFunctions.GeoIntersectsFunctionName:
+                    return BindGeoIntersects(node);
+
+                case ClrCanonicalFunctions.GeoLengthFunctionName:
+                    return BindGeoLength(node);
+
                 default:
                     // Get Expression of custom binded method.
                     Expression expression = BindCustomMethodExpressionOrNull(node);
@@ -773,6 +803,30 @@ namespace Microsoft.AspNet.OData.Query.Expressions
 
                     throw new NotImplementedException(Error.Format(SRResources.ODataFunctionNotSupported, node.Name));
             }
+        }
+
+        private Expression BindGeoIntersects(SingleValueFunctionCallNode node)
+        {
+            Contract.Assert("geo.intersects" == node.Name);
+            Expression[] arguments = BindArguments(node.Parameters);
+            Contract.Assert(arguments.Length == 2 && typeof(Geography).IsAssignableFrom(arguments[0].Type) && typeof(Geography).IsAssignableFrom(arguments[1].Type));
+            return MakeFunctionCall(ClrCanonicalFunctions.GeoIntersects, arguments);
+        }
+
+        private Expression BindGeoDistance(SingleValueFunctionCallNode node)
+        {
+            Contract.Assert("geo.distance" == node.Name);
+            Expression[] arguments = BindArguments(node.Parameters);
+            Contract.Assert(arguments.Length == 2 && arguments[0].Type == typeof(GeographyPoint) && arguments[1].Type == typeof(GeographyPoint));
+            return MakeFunctionCall(ClrCanonicalFunctions.GeoDistance, arguments);
+        }
+
+        private Expression BindGeoLength(SingleValueFunctionCallNode node)
+        {
+            Contract.Assert("geo.length" == node.Name);
+            Expression[] arguments = BindArguments(node.Parameters);
+            Contract.Assert(arguments.Length == 1 && arguments[0].Type == typeof(GeographyLineString));
+            return MakeFunctionCall(ClrCanonicalFunctions.GeoLength, arguments);
         }
 
         private Expression BindCastSingleValue(SingleValueFunctionCallNode node)

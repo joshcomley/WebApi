@@ -84,6 +84,7 @@ namespace Microsoft.AspNet.OData.Query.Expressions
 
             QuerySettings = requestContainer.GetRequiredService<ODataQuerySettings>();
             Model = requestContainer.GetRequiredService<IEdmModel>();
+            RequestContainer = requestContainer;
 
             // The IWebApiAssembliesResolver service is internal and can only be injected by WebApi.
             // This code path may be used in the cases when the service container available
@@ -91,6 +92,11 @@ namespace Microsoft.AspNet.OData.Query.Expressions
             IWebApiAssembliesResolver injectedResolver = requestContainer.GetService<IWebApiAssembliesResolver>();
             InternalAssembliesResolver = (injectedResolver != null) ? injectedResolver : WebApiAssembliesResolver.Default;
         }
+
+        /// <summary>
+        /// The request container.
+        /// </summary>
+        public IServiceProvider RequestContainer { get; set; }
 
         internal ExpressionBinderBase(IEdmModel model, IWebApiAssembliesResolver assembliesResolver, ODataQuerySettings querySettings)
             : this(model, querySettings)
@@ -571,7 +577,7 @@ namespace Microsoft.AspNet.OData.Query.Expressions
             }
         }
 
-        private static IEnumerable<Expression> ExtractValueFromNullableArguments(IEnumerable<Expression> arguments)
+        internal static IEnumerable<Expression> ExtractValueFromNullableArguments(IEnumerable<Expression> arguments)
         {
             return arguments.Select(arg => ExtractValueFromNullableExpression(arg));
         }
