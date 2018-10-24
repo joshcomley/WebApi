@@ -14,7 +14,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GeoAPI" Version="1.7.5" />
-    <PackageReference Include="Microsoft.Spatial" Version="7.5.0" />
+    <PackageReference Include="Microsoft.Spatial" Version="8.1.0.1" />
     <PackageReference Include="NetTopologySuite" Version="1.15.1" />
   </ItemGroup>
   <ItemGroup>
