@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using Microsoft.AspNet.OData.Builder;
+using Microsoft.AspNetCore.OData.NetTopology;
 using Microsoft.OData.Edm;
 
 namespace AspNetCoreODataSample.Web.Models
@@ -20,9 +21,11 @@ namespace AspNetCoreODataSample.Web.Models
                 movieStar.HasOptional(_ => _.Movie,
                     (person, movie) => person.MovieId == movie.ID, movie => movie.Stars);
                 movieStar.HasKey(x => new { x.FirstName, x.LastName });
+                builder.MapSpatial<Movie>(m => m.LocationPoint, m => m.Point);
+                builder.MapSpatial<Movie>(m => m.Polygon, m => m.PolygonDb);
+                builder.MapSpatial<Movie>(m => m.LineStringEdm, m => m.LineString);
                 _edmModel = builder.GetEdmModel();
             }
-
             return _edmModel;
         }
 

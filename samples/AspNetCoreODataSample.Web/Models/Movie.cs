@@ -3,6 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.OData.NetTopology.Conversion;
+using Microsoft.Spatial;
+using NetTopologySuite.Geometries;
 
 namespace AspNetCoreODataSample.Web.Models
 {
@@ -10,7 +14,48 @@ namespace AspNetCoreODataSample.Web.Models
     {
         public int ID { get; set; }
 
+        private PointWrapper _point;
+        public Point Point
+        {
+            get => _point;
+            set => _point = value;
+        }
         public List<MovieStar> Stars { get; set; }
+        [NotMapped]
+        public GeographyPoint LocationPoint
+        {
+            get => _point;
+            set => _point = value;
+        }
+
+        private PolygonWrapper _polygonWrapper;
+        public Polygon PolygonDb
+        {
+            get => _polygonWrapper;
+            set => _polygonWrapper = value;
+        }
+
+        [NotMapped]
+        public GeographyPolygon Polygon
+        {
+            get => _polygonWrapper;
+            set => _polygonWrapper = value;
+        }
+
+
+        private LineStringWrapper _lineStringWrapper;
+        public LineString LineString
+        {
+            get => _lineStringWrapper;
+            set => _lineStringWrapper = value;
+        }
+
+        [NotMapped]
+        public GeographyLineString LineStringEdm
+        {
+            get => _lineStringWrapper;
+            set => _lineStringWrapper = value;
+        }
 
         public string Title { get; set; }
 

@@ -17,6 +17,7 @@ namespace AspNetCoreODataSample.Web.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Movie>().Property(m => m.Price).HasColumnType("NUMERIC");
             modelBuilder.Entity<MovieStar>().HasKey(_ => new
             {
                 _.FirstName,

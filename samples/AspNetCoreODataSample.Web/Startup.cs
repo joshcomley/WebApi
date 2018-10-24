@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using AspNetCoreODataSample.Web.Models;
+using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Interfaces;
 
 namespace AspNetCoreODataSample.Web
 {
@@ -23,13 +25,14 @@ namespace AspNetCoreODataSample.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<MovieContext>(opt =>
-                opt.UseSqlServer("Server=.;Database=AspNetCoreODataSample.Web;Integrated Security=True")
-                //opt.UseInMemoryDatabase("MovieList")
-                );
-            services.AddOData();
+            services.AddDbContext<MovieContext>(
+                opt =>
+                    opt.UseSqlServer(@"Server=.;Database=AspNetCoreODataSample.Web;Integrated Security=True;Trusted_Connection=True;MultipleActiveResultSets=true", sql => sql.UseNetTopologySuite()));
+            OData = services.AddOData();
             services.AddMvc();
         }
+
+        public IODataBuilder OData { get; set; }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -51,6 +54,16 @@ namespace AspNetCoreODataSample.Web
 
                 builder.MapODataServiceRoute("odata3", "composite", EdmModelBuilder.GetCompositeModel());
             });
+
+            OData.UseODataNetTopologySuite(model);
+
+            using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<MovieContext>();
+                //await context.Database.EnsureCreatedAsync(cancellationToken);
+                //context.Database.EnsureCreated();
+                context.Database.Migrate();
+            }
         }
     }
 }
