@@ -329,11 +329,6 @@ namespace Microsoft.AspNet.OData.Formatter.Serialization
             }
 
             IEdmStructuredTypeReference structuredType = GetResourceType(graph, writeContext);
-            var selectExpandWrapper = graph as ISelectExpandWrapper;
-            if (selectExpandWrapper != null && selectExpandWrapper.Instance == null)
-            {
-                return;
-            }
             ResourceContext resourceContext = new ResourceContext(writeContext, structuredType, graph);
 
             SelectExpandNode selectExpandNode = CreateSelectExpandNode(resourceContext);

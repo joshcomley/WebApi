@@ -282,6 +282,12 @@ namespace Microsoft.AspNet.OData.Formatter.Serialization
                     continue;
                 }
 
+                ExpandedCountSelectItem expandedCountSelectItem = selectItem as ExpandedCountSelectItem;
+                if (expandedCountSelectItem != null)
+                {
+                    continue;
+                }
+
                 throw new ODataException(Error.Format(SRResources.SelectionTypeNotSupported, selectItem.GetType().Name));
             }
         }
