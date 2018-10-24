@@ -27,7 +27,7 @@ namespace AspNetCoreODataSample.Web
         {
             services.AddDbContext<MovieContext>(
                 opt =>
-                    opt.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=AspNetCoreODataSample.Web;Integrated Security=True;Trusted_Connection=True;MultipleActiveResultSets=true", sql => sql.UseNetTopologySuite()));
+                    opt.UseSqlServer(@"Server=.;Database=AspNetCoreODataSample.Web;Integrated Security=True;Trusted_Connection=True;MultipleActiveResultSets=true", sql => sql.UseNetTopologySuite()));
             OData = services.AddOData();
             services.AddMvc();
         }
