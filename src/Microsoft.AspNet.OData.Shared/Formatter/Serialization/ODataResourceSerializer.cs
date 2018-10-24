@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using Microsoft.AspNet.OData.Builder;
 using Microsoft.AspNet.OData.Common;
+using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNet.OData.Query.Expressions;
 using Microsoft.OData;
 using Microsoft.OData.Edm;
@@ -328,6 +329,11 @@ namespace Microsoft.AspNet.OData.Formatter.Serialization
             }
 
             IEdmStructuredTypeReference structuredType = GetResourceType(graph, writeContext);
+            var selectExpandWrapper = graph as ISelectExpandWrapper;
+            if (selectExpandWrapper != null && selectExpandWrapper.Instance == null)
+            {
+                return;
+            }
             ResourceContext resourceContext = new ResourceContext(writeContext, structuredType, graph);
 
             SelectExpandNode selectExpandNode = CreateSelectExpandNode(resourceContext);

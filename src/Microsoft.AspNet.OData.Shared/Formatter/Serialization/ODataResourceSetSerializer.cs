@@ -122,6 +122,7 @@ namespace Microsoft.AspNet.OData.Formatter.Serialization
 
             // save this for later to support JSON odata.streaming.
             Uri nextPageLink = resourceSet.NextPageLink;
+            resourceSet.CountOnly = enumerable is ICountOptionCollection && (enumerable as ITruncatedCollection).OnlyCount;
             resourceSet.NextPageLink = null;
 
             writer.WriteStart(resourceSet);

@@ -106,11 +106,12 @@ namespace Microsoft.AspNet.OData.Query.Expressions
 
             memberBindings.Add(Expression.Bind(namedPropertyType.GetProperty("Name"), property.Name));
 
-            if (property.PageSize != null || property.CountOption != null)
+            var collectionProperty = namedPropertyType.GetProperty("Collection");
+            if ((property.PageSize != null || property.CountOption != null) && collectionProperty != null)
             {
                 if (!property.OnlyCount.HasValue || property.OnlyCount == false)
                 {
-                    memberBindings.Add(Expression.Bind(namedPropertyType.GetProperty("Collection"), property.Value));
+                    memberBindings.Add(Expression.Bind(collectionProperty, property.Value));
                 }
 
                 if (property.PageSize != null)
@@ -233,6 +234,8 @@ namespace Microsoft.AspNet.OData.Query.Expressions
 
             public long? TotalCount { get; set; }
 
+            public bool OnlyCount { get; set; }
+
             public IEnumerable<T> Collection { get; set; }
 
             public override object GetValue()
@@ -243,7 +246,7 @@ namespace Microsoft.AspNet.OData.Query.Expressions
                 }
                 else
                 {
-                    return new TruncatedCollection<T>(Collection, PageSize, TotalCount);
+                    return new TruncatedCollection<T>(Collection, PageSize, TotalCount, OnlyCount);
                 }
             }
         }
