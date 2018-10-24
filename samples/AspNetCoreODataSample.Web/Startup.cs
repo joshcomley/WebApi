@@ -23,7 +23,11 @@ namespace AspNetCoreODataSample.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<MovieContext>(opt => opt.UseInMemoryDatabase("MovieList"));
+            services.AddDbContext<MovieContext>(opt => 
+                opt
+                    //.UseSqlServer("Server=.;Database=AspNetCoreODataSample.Web;Integrated Security=True;")
+                    .UseInMemoryDatabase("MovieList")
+            );
             services.AddOData();
             services.AddMvc();
         }

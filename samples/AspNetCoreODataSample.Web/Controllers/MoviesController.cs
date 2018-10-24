@@ -20,16 +20,45 @@ namespace AspNetCoreODataSample.Web.Controllers
         {
             _context = context;
 
-            if (_context.Movies.Count() == 0)
+            if (!_context.Movies.Any())
             {
-                Movie m = new Movie
+                Movie conanMovie = new Movie
                 {
                     Title = "Conan",
                     ReleaseDate = new DateTimeOffset(new DateTime(2017, 3, 3)),
                     Genre = Genre.Comedy,
-                    Price = 1.99m
+                    Price = 1.99m,
                 };
-                _context.Movies.Add(m);
+                Movie dieHardMovie = new Movie
+                {
+                    Title = "Die Hard",
+                    ReleaseDate = new DateTimeOffset(new DateTime(2014, 1, 3)),
+                    Genre = Genre.Comedy,
+                    Price = 1.89m
+                };
+                _context.Movies.Add(conanMovie);
+                _context.Movies.Add(dieHardMovie);
+                _context.SaveChanges();
+            }
+
+            if (!_context.MovieStars.Any())
+            {
+                var conanMovie = _context.Movies.Single(m => m.Title == "Conan");
+                var dieHardMovie = _context.Movies.Single(m => m.Title == "Die Hard");
+                MovieStar s = new MovieStar
+                {
+                    FirstName = "Arnold",
+                    LastName = "Schwarzenegger",
+                    MovieId = dieHardMovie.ID
+                };
+                _context.MovieStars.Add(s);
+                MovieStar b = new MovieStar
+                {
+                    FirstName = "Bruce",
+                    LastName = "Willis",
+                    MovieId = dieHardMovie.ID
+                };
+                _context.MovieStars.Add(b);
                 _context.SaveChanges();
             }
 
@@ -57,28 +86,18 @@ namespace AspNetCoreODataSample.Web.Controllers
         [EnableQuery]
         public IActionResult Get()
         {
-            if (Request.Path.Value.Contains("efcore"))
-            {
-                return Ok(_context.Movies);
-            }
-            else
-            {
-                return Ok(_inMemoryMovies);
-            }
+            return Request.Path.Value.Contains("efcore")
+                ? Ok(_context.Movies)
+                : Ok(_inMemoryMovies);
         }
 
         [EnableQuery]
-        public IActionResult Get(int key)
+        public IActionResult Get2(int key)
         {
             Movie m;
-            if (Request.Path.Value.Contains("efcore"))
-            {
-                m = _context.Movies.FirstOrDefault(c => c.ID == key);
-            }
-            else
-            {
-                m = _inMemoryMovies.FirstOrDefault(c => c.ID == key);
-            }
+            m = Request.Path.Value.Contains("efcore")
+                ? _context.Movies.FirstOrDefault(c => c.ID == key)
+                : _inMemoryMovies.FirstOrDefault(c => c.ID == key);
 
             if (m == null)
             {
@@ -86,6 +105,30 @@ namespace AspNetCoreODataSample.Web.Controllers
             }
 
             return Ok(m);
+        }
+
+        [EnableQuery]
+        public IActionResult Get(int key)
+        {
+            var m = Request.Path.Value.Contains("efcore")
+                ? _context.Movies.Where(c => c.ID == key)
+                : _inMemoryMovies.Where(c => c.ID == key).AsQueryable();
+
+            if (!m.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(new SingleResult<Movie>(m));
+        }
+
+        [HttpPost]
+        public IActionResult Patch(int key, [FromBody]Delta<Movie> delta)
+        {
+            var existing = _context.Movies.Find(key);
+            delta.Patch(existing);
+            _context.SaveChanges();
+            return Ok();
         }
     }
 }

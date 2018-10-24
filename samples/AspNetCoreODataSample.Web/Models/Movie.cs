@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 
 namespace AspNetCoreODataSample.Web.Models
 {
@@ -10,6 +11,8 @@ namespace AspNetCoreODataSample.Web.Models
         public int ID { get; set; }
 
         public string Title { get; set; }
+
+        public List<MovieStar> Stars { get; set; }
 
         public DateTimeOffset ReleaseDate { get; set; }
 

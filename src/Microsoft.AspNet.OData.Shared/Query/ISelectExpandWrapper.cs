@@ -13,6 +13,11 @@ namespace Microsoft.AspNet.OData.Query
     public interface ISelectExpandWrapper
     {
         /// <summary>
+        /// Gets or sets the instance of the element being selected and expanded.
+        /// </summary>
+        object Instance { get; }
+
+        /// <summary>
         /// Projects the result of a $select and $expand query to a <see cref="IDictionary{TKey,TValue}" />.
         /// </summary>
         /// <returns>An <see cref="IDictionary{TKey,TValue}"/> representing the $select and $expand result.</returns>

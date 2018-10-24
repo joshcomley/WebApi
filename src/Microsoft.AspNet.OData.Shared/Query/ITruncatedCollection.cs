@@ -11,6 +11,11 @@ namespace Microsoft.AspNet.OData.Query
     public interface ITruncatedCollection : IEnumerable
     {
         /// <summary>
+        /// Whether to return only the count and nothing else
+        /// </summary>
+        bool OnlyCount { get; }
+
+        /// <summary>
         /// Gets the page size the collection is truncated to.
         /// </summary>
         int PageSize { get; }

@@ -390,10 +390,9 @@ namespace Microsoft.AspNet.OData.Query.Expressions
         {
             Expression countExpression = Expression.Constant(null, typeof(long?));
             if ((expandItem.CountOption == null && !(expandItem is ExpandedCountSelectItem)) ||
-                (expandItem.CountOption == null || !expandItem.CountOption.Value)
-                )
+                (expandItem.CountOption != null && !expandItem.CountOption.Value))
             {
-                return countExpression;
+                return null;
             }
 
             Type elementType;
@@ -423,10 +422,8 @@ namespace Microsoft.AspNet.OData.Query.Expressions
                        ifTrue: Expression.Constant(null, typeof(long?)),
                        ifFalse: ExpressionHelpers.ToNullable(countExpression));
             }
-            else
-            {
-                return countExpression;
-            }
+
+            return ExpressionHelpers.ToNullable(countExpression);
         }
 
         [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Class coupling acceptable")]
@@ -482,11 +479,10 @@ namespace Microsoft.AspNet.OData.Query.Expressions
                             propertyExpression.PageSize = querySettings.PageSize.Value;
                         }
                     }
-
-                    propertyExpression.OnlyCount = expandItem is ExpandedCountSelectItem;
-                    propertyExpression.TotalCount = countExpression;
-                    propertyExpression.CountOption = expandItem.CountOption;
                 }
+                propertyExpression.OnlyCount = expandItem is ExpandedCountSelectItem;
+                propertyExpression.CountOption = countExpression != null;
+                propertyExpression.TotalCount = countExpression;
 
                 includedProperties.Add(propertyExpression);
             }

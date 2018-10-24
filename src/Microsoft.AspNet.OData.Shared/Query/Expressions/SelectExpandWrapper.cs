@@ -20,6 +20,8 @@ namespace Microsoft.AspNet.OData.Query.Expressions
         private Dictionary<string, object> _containerDict;
         private TypedEdmEntityObject _typedEdmEntityObject;
 
+        object ISelectExpandWrapper.Instance => UntypedInstance;
+
         /// <summary>
         /// Gets or sets the property container that contains the properties being expanded. 
         /// </summary>

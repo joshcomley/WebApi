@@ -186,7 +186,7 @@ namespace Microsoft.AspNet.OData.Formatter.Serialization
         {
             foreach (SelectItem selectItem in selectExpandClause.SelectedItems)
             {
-                ExpandedNavigationSelectItem expandItem = selectItem as ExpandedNavigationSelectItem;
+                ExpandedReferenceSelectItem expandItem = selectItem as ExpandedReferenceSelectItem;
                 if (expandItem != null)
                 {
                     ValidatePathIsSupported(expandItem.PathToNavigationProperty);
@@ -194,7 +194,8 @@ namespace Microsoft.AspNet.OData.Formatter.Serialization
                     IEdmNavigationProperty navigationProperty = navigationSegment.NavigationProperty;
                     if (allNavigationProperties.Contains(navigationProperty))
                     {
-                        ExpandedNavigationProperties.Add(navigationProperty, expandItem.SelectAndExpand);
+                        ExpandedNavigationProperties.Add(navigationProperty,
+                            expandItem is ExpandedNavigationSelectItem ? (expandItem as ExpandedNavigationSelectItem).SelectAndExpand : null);
                     }
                 }
             }
