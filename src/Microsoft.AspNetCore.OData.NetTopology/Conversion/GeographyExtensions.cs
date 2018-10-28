@@ -40,8 +40,8 @@ namespace Microsoft.AspNetCore.OData.NetTopology.Conversion
             for (var n = 0; n < numPionts; n++)
             {
                 var pointN = lineString.GetGeometryN(n + 1);
-                var lat = pointN.Coordinate.X;
-                var lon = pointN.Coordinate.Y;
+                var lat = pointN.Coordinate.Y;
+                var lon = pointN.Coordinate.X;
                 var alt = pointN.Coordinate.Z;
                 var m = pointN.Length;
                 var position = new GeographyPosition(lat, lon, alt, m);
@@ -70,7 +70,7 @@ namespace Microsoft.AspNetCore.OData.NetTopology.Conversion
             var coords = new List<Coordinate>();
             foreach (var coord in lineString.Points)
             {
-                coords.Add(new Coordinate(coord.Latitude, coord.Longitude, coord.Z ?? 0));
+                coords.Add(new Coordinate(coord.Longitude, coord.Latitude, coord.Z ?? 0));
             }
             var ntsLineString = GeographyFactory.CreateLineString(coords.ToArray());
             return (LineString) ntsLineString;
@@ -89,8 +89,8 @@ namespace Microsoft.AspNetCore.OData.NetTopology.Conversion
             }
 
             Debug.Assert(point.GeometryType == "Point");
-            var lat = point.X;
-            var lon = point.Y;
+            var lat = point.Y;
+            var lon = point.X;
             var alt = point.Z;
             var m = point.Length;
             return GeographyPoint.Create(lat, lon, alt, m);
@@ -105,7 +105,7 @@ namespace Microsoft.AspNetCore.OData.NetTopology.Conversion
         {
             var lat = geographyPoint.Latitude;
             var lon = geographyPoint.Longitude;
-            var coord = new Coordinate(lat, lon);
+            var coord = new Coordinate(lon, lat);
             return (Point)GeographyFactory.CreatePoint(coord);
         }
 
@@ -121,7 +121,7 @@ namespace Microsoft.AspNetCore.OData.NetTopology.Conversion
             {
                 foreach (var coord in ring.Points)
                 {
-                    coords.Add(new Coordinate(coord.Latitude, coord.Longitude, coord.Z ?? 0));
+                    coords.Add(new Coordinate(coord.Longitude, coord.Latitude, coord.Z ?? 0));
                 }
             }
 
@@ -129,7 +129,7 @@ namespace Microsoft.AspNetCore.OData.NetTopology.Conversion
             coords.RemoveAt(coords.Count - 1);
             coords.Sort(new CoordinateComparer(CalculateCentre(coords)));
             var first = coords.First();
-            coords.Add(new Coordinate(first.X, first.Y, 0));
+            coords.Add(new Coordinate(first.X, first.Y, first.Z));
             var poly = new Polygon(
                 new LinearRing(new CoordinateArraySequence(coords.ToArray()), geomFactory),
                 geomFactory);
@@ -162,14 +162,14 @@ namespace Microsoft.AspNetCore.OData.NetTopology.Conversion
             coords.RemoveAt(coords.Count - 1);
             coords.Sort(new CoordinateComparer(CalculateCentre(coords)));
             var first = coords.First();
-            builder.GeographyPipeline.BeginFigure(new GeographyPosition(first.X, first.Y, first.Z, null));
+            builder.GeographyPipeline.BeginFigure(new GeographyPosition(first.Y, first.X, first.Z, null));
             for (var i = 1; i < coords.Count; i++)
             {
                 var next = coords[i];
-                builder.GeographyPipeline.LineTo(new GeographyPosition(next.X, next.Y, next.Z, null));
+                builder.GeographyPipeline.LineTo(new GeographyPosition(next.Y, next.X, next.Z, null));
             }
 
-            builder.GeographyPipeline.LineTo(new GeographyPosition(first.X, first.Y, first.Z, null));
+            builder.GeographyPipeline.LineTo(new GeographyPosition(first.Y, first.X, first.Z, null));
             builder.GeographyPipeline.EndFigure();
         }
 
