@@ -78,6 +78,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Query\OrderByCountNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Query\ExpressionHook.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Query\ExpressionHookRegistrar.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Query\OrderBySingleValueFunctionNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RequestMethod.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IWebApiActionDescriptor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IWebApiActionMap.cs" />

@@ -71,6 +71,10 @@ namespace Microsoft.AspNet.OData.Query
                 {
                     result.Add(new OrderByOpenPropertyNode(clause));
                 }
+                if (clause.Expression is SingleValueFunctionCallNode)
+                {
+                    result.Add(new OrderBySingleValueFunctionNode(clause));
+                }
                 else
                 {
                     result.Add(new OrderByPropertyNode(clause));

@@ -242,6 +242,7 @@ namespace Microsoft.AspNet.OData.Query
                 OrderByPropertyNode propertyNode = node as OrderByPropertyNode;
                 OrderByOpenPropertyNode openPropertyNode = node as OrderByOpenPropertyNode;
                 OrderByCountNode countNode = node as OrderByCountNode;
+                OrderBySingleValueFunctionNode functionNode = node as OrderBySingleValueFunctionNode;
 
                 if (propertyNode != null)
                 {
@@ -284,6 +285,11 @@ namespace Microsoft.AspNet.OData.Query
                 else if (countNode != null)
                 {
                     querySoFar = AddOrderByQueryForProperty(query, querySettings, countNode.OrderByClause, querySoFar, countNode.Direction, alreadyOrdered);
+                    alreadyOrdered = true;
+                }
+                else if (functionNode != null)
+                {
+                    querySoFar = AddOrderByQueryForProperty(query, querySettings, functionNode.OrderByClause, querySoFar, functionNode.Direction, alreadyOrdered);
                     alreadyOrdered = true;
                 }
                 else
