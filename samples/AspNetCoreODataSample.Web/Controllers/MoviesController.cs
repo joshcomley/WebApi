@@ -89,8 +89,8 @@ namespace AspNetCoreODataSample.Web.Controllers
         [EnableQuery]
         public IActionResult Get()
         {
-            return Request.Path.Value.Contains("efcore") 
-                ? Ok(_context.Movies) 
+            return Request.Path.Value.Contains("efcore")
+                ? Ok(_context.Movies)
                 : Ok(_inMemoryMovies);
         }
 
@@ -98,7 +98,7 @@ namespace AspNetCoreODataSample.Web.Controllers
         public IActionResult Get2(int key)
         {
             Movie m;
-            m = Request.Path.Value.Contains("efcore") 
+            m = Request.Path.Value.Contains("efcore")
                 ? _context.Movies.FirstOrDefault(c => c.ID == key)
                 : _inMemoryMovies.FirstOrDefault(c => c.ID == key);
 
@@ -113,8 +113,8 @@ namespace AspNetCoreODataSample.Web.Controllers
         [EnableQuery]
         public IActionResult Get(int key)
         {
-            var m = Request.Path.Value.Contains("efcore") 
-                ? _context.Movies.Where(c => c.ID == key) 
+            var m = Request.Path.Value.Contains("efcore")
+                ? _context.Movies.Where(c => c.ID == key)
                 : _inMemoryMovies.Where(c => c.ID == key).AsQueryable();
 
             if (!m.Any())

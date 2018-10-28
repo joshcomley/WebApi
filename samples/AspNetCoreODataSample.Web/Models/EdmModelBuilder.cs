@@ -17,10 +17,12 @@ namespace AspNetCoreODataSample.Web.Models
             {
                 var builder = new ODataConventionModelBuilder();
                 builder.EntitySet<Movie>("Movies");
+                builder.EntitySet<Place>("Places");
                 var movieStar = builder.EntitySet<MovieStar>("MovieStars").EntityType;
                 movieStar.HasOptional(_ => _.Movie,
                     (person, movie) => person.MovieId == movie.ID, movie => movie.Stars);
                 movieStar.HasKey(x => new { x.FirstName, x.LastName });
+                builder.MapSpatial<Place>(m => m.EdmLocation, m => m.Location);
                 builder.MapSpatial<Movie>(m => m.LocationPoint, m => m.Point);
                 builder.MapSpatial<Movie>(m => m.Polygon, m => m.PolygonDb);
                 builder.MapSpatial<Movie>(m => m.LineStringEdm, m => m.LineString);

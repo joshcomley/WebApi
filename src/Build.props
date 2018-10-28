@@ -2,7 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-	<PackageVersion>7.2.0-pre-0003</PackageVersion>
+	<PackageVersion>7.2.0-pre-0005</PackageVersion>
   </PropertyGroup>
 
 </Project>
