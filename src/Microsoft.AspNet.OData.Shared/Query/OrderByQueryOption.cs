@@ -241,6 +241,7 @@ namespace Microsoft.AspNet.OData.Query
             {
                 OrderByPropertyNode propertyNode = node as OrderByPropertyNode;
                 OrderByOpenPropertyNode openPropertyNode = node as OrderByOpenPropertyNode;
+                OrderBySingleValueFunctionNode functionNode = node as OrderBySingleValueFunctionNode;
 
                 if (propertyNode != null)
                 {
@@ -278,6 +279,11 @@ namespace Microsoft.AspNet.OData.Query
                     openPropertiesSoFar.Add(openPropertyNode.PropertyName);
                     Contract.Assert(openPropertyNode.OrderByClause != null);
                     querySoFar = AddOrderByQueryForProperty(query, querySettings, openPropertyNode.OrderByClause, querySoFar, openPropertyNode.Direction, alreadyOrdered);
+                    alreadyOrdered = true;
+                }
+                else if (functionNode != null)
+                {
+                    querySoFar = AddOrderByQueryForProperty(query, querySettings, functionNode.OrderByClause, querySoFar, functionNode.Direction, alreadyOrdered);
                     alreadyOrdered = true;
                 }
                 else
