@@ -67,6 +67,11 @@ namespace Microsoft.AspNetCore.OData.NetTopology.Conversion
         /// <returns></returns>
         public static LineString ToNtsLineString(this GeographyLineString lineString)
         {
+            if (lineString == null)
+            {
+                return null;
+            }
+
             var coords = new List<Coordinate>();
             foreach (var coord in lineString.Points)
             {
@@ -103,6 +108,11 @@ namespace Microsoft.AspNetCore.OData.NetTopology.Conversion
         /// <returns></returns>
         public static Point ToNtsPoint(this GeographyPoint geographyPoint)
         {
+            if (geographyPoint == null)
+            {
+                return null;
+            }
+
             var lat = geographyPoint.Latitude;
             var lon = geographyPoint.Longitude;
             var coord = new Coordinate(lon, lat);
@@ -116,6 +126,11 @@ namespace Microsoft.AspNetCore.OData.NetTopology.Conversion
         /// <returns></returns>
         public static Polygon ToNtsPolygon(this GeographyPolygon geographyPolygon)
         {
+            if (geographyPolygon == null)
+            {
+                return null;
+            }
+
             var coords = new List<Coordinate>();
             foreach (var ring in geographyPolygon.Rings)
             {
@@ -149,6 +164,10 @@ namespace Microsoft.AspNetCore.OData.NetTopology.Conversion
         /// <returns></returns>
         public static GeographyPolygon ToGeographyPolygon(this Polygon polygon)
         {
+            if (polygon == null)
+            {
+                return null;
+            }
             var builder = SpatialImplementation.CurrentImplementation.CreateBuilder();
             builder.GeographyPipeline.SetCoordinateSystem(CoordinateSystem.DefaultGeography);
             builder.GeographyPipeline.BeginGeography(SpatialType.Polygon);
@@ -174,6 +193,11 @@ namespace Microsoft.AspNetCore.OData.NetTopology.Conversion
 
         private static void BuildRing(IGeometry ring, SpatialPipeline builder)
         {
+            if (ring == null)
+            {
+                return;
+            }
+
             var coords = ring.Coordinates.ToList();
             coords.RemoveAt(coords.Count - 1);
             var first = coords.First();
