@@ -16,7 +16,7 @@ namespace Microsoft.AspNetCore.OData.NetTopology.Conversion
     public static class GeographyExtensions
     {
         private const int Srid = 4326;
-        private static GeometryFactory GeographyFactory { get; } 
+        private static GeometryFactory GeographyFactory { get; }
             = new GeometryFactory(new PrecisionModel(), Srid);
         /// <summary>
         ///     Converts an NTS LineString to a Microsoft.Spatial GeogaphyLineString.
@@ -67,13 +67,18 @@ namespace Microsoft.AspNetCore.OData.NetTopology.Conversion
         /// <returns></returns>
         public static LineString ToNtsLineString(this GeographyLineString lineString)
         {
+            if (lineString == null)
+            {
+                return null;
+            }
+
             var coords = new List<Coordinate>();
             foreach (var coord in lineString.Points)
             {
                 coords.Add(new Coordinate(coord.Longitude, coord.Latitude, coord.Z ?? 0));
             }
             var ntsLineString = GeographyFactory.CreateLineString(coords.ToArray());
-            return (LineString) ntsLineString;
+            return (LineString)ntsLineString;
         }
 
         /// <summary>
@@ -103,6 +108,11 @@ namespace Microsoft.AspNetCore.OData.NetTopology.Conversion
         /// <returns></returns>
         public static Point ToNtsPoint(this GeographyPoint geographyPoint)
         {
+            if (geographyPoint == null)
+            {
+                return null;
+            }
+
             var lat = geographyPoint.Latitude;
             var lon = geographyPoint.Longitude;
             var coord = new Coordinate(lon, lat);
@@ -116,6 +126,11 @@ namespace Microsoft.AspNetCore.OData.NetTopology.Conversion
         /// <returns></returns>
         public static Polygon ToNtsPolygon(this GeographyPolygon geographyPolygon)
         {
+            if (geographyPolygon == null)
+            {
+                return null;
+            }
+
             var coords = new List<Coordinate>();
             foreach (var ring in geographyPolygon.Rings)
             {
@@ -149,13 +164,17 @@ namespace Microsoft.AspNetCore.OData.NetTopology.Conversion
         /// <returns></returns>
         public static GeographyPolygon ToGeographyPolygon(this Polygon polygon)
         {
+            if (polygon == null)
+            {
+                return null;
+            }
             var builder = SpatialImplementation.CurrentImplementation.CreateBuilder();
             builder.GeographyPipeline.SetCoordinateSystem(CoordinateSystem.DefaultGeography);
             builder.GeographyPipeline.BeginGeography(SpatialType.Polygon);
             var exteriorRing = polygon.ExteriorRing;
             if (!new LinearRing(exteriorRing.Coordinates).IsCCW)
             {
-                exteriorRing = (ILineString) exteriorRing.Reverse();
+                exteriorRing = (ILineString)exteriorRing.Reverse();
             }
             BuildRing(exteriorRing, builder);
             foreach (var ring in polygon.Holes)
@@ -163,17 +182,22 @@ namespace Microsoft.AspNetCore.OData.NetTopology.Conversion
                 var ringCopy = ring;
                 if (ringCopy.IsCCW)
                 {
-                    ringCopy = (ILinearRing) ringCopy.Reverse();
+                    ringCopy = (ILinearRing)ringCopy.Reverse();
                 }
                 BuildRing(ringCopy, builder);
             }
 
             builder.GeographyPipeline.EndGeography();
-            return (GeographyPolygon) builder.ConstructedGeography;
+            return (GeographyPolygon)builder.ConstructedGeography;
         }
 
         private static void BuildRing(ILineString ring, SpatialPipeline builder)
         {
+            if (ring == null)
+            {
+                return;
+            }
+
             var coords = ring.Coordinates.ToList();
             coords.RemoveAt(coords.Count - 1);
             //coords.Sort(new CoordinateComparer(CalculateCentre(coords)));
@@ -189,19 +213,19 @@ namespace Microsoft.AspNetCore.OData.NetTopology.Conversion
             builder.GeographyPipeline.EndFigure();
         }
 
-        private static Coordinate CalculateCentre(ICollection<Coordinate> points)
-        {
-            double totalX = 0, totalY = 0;
-            foreach (var p in points)
-            {
-                totalX += p.X;
-                totalY += p.Y;
-            }
+        //private static Coordinate CalculateCentre(ICollection<Coordinate> points)
+        //{
+        //    double totalX = 0, totalY = 0;
+        //    foreach (var p in points)
+        //    {
+        //        totalX += p.X;
+        //        totalY += p.Y;
+        //    }
 
-            var centerX = totalX / points.Count;
-            var centerY = totalY / points.Count;
-            return new Coordinate(centerX, centerY);
-        }
+        //    var centerX = totalX / points.Count;
+        //    var centerY = totalY / points.Count;
+        //    return new Coordinate(centerX, centerY);
+        //}
 
         //private class CoordinateComparer : IComparer<Coordinate>
         //{

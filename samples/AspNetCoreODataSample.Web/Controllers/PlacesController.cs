@@ -56,5 +56,15 @@ namespace AspNetCoreODataSample.Web.Controllers
                 ? Ok(_context.Places)
                 : Ok(new Place[] { }.AsQueryable());
         }
+
+        [HttpPut]
+        [HttpPatch]
+        public IActionResult Patch([FromODataUri]int key, [FromBody]Delta<Place> delta)
+        {
+            var place = _context.Places.Single(_ => _.ID == key);
+            delta.Patch(place);
+            _context.SaveChanges();
+            return Ok(place);
+        }
     }
 }
