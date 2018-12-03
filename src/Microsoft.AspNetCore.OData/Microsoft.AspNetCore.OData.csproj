@@ -1,12 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;netcoreapp2.1</TargetFrameworks>
   </PropertyGroup>
   <Import Project="..\..\tools\WebStack.settings.targets" />
   <Import Project="..\Build.props" />
   <PropertyGroup>
     <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
-    <CodeAnalysisRuleSet>..\Strict.ruleset</CodeAnalysisRuleSet>
     <DefineConstants>$(DefineConstants);ASPNETODATA;ASPNETWEBAPI;NETCORE;NETCORE2x;NOT_CLS_COMPLIANT</DefineConstants>
     <RootNamespace>Microsoft.AspNet.OData</RootNamespace>
     <!-- Let's generate our own assembly info -->
@@ -19,9 +18,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.0.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
-    <PackageReference Include="Microsoft.OData.Core" Version="8.0.3.2-0009-0-Release" />
-    <PackageReference Include="Microsoft.OData.Edm" Version="8.0.3.2-0009-0-Release" />
-    <PackageReference Include="Microsoft.Spatial" Version="8.0.3.2-0009-0-Release" />
     <PackageReference Include="Microsoft.OData.Core" Version="8.1.0.1" />
     <PackageReference Include="Microsoft.OData.Edm" Version="8.1.0.1" />
     <PackageReference Include="Microsoft.Spatial" Version="8.1.0.1" />
