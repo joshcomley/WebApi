@@ -66,5 +66,11 @@ namespace AspNetCoreODataSample.Web.Controllers
             _context.SaveChanges();
             return Ok(place);
         }
+
+        [HttpPost]
+        public IActionResult Post([FromBody]Place place)
+        {
+            return Ok(place);
+        }
     }
 }

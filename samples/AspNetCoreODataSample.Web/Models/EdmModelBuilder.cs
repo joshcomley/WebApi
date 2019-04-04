@@ -18,6 +18,8 @@ namespace AspNetCoreODataSample.Web.Models
                 var builder = new ODataConventionModelBuilder();
                 builder.EntitySet<Movie>("Movies");
                 builder.EntitySet<Place>("Places");
+                builder.EntitySet<Person>("People");
+                builder.EntitySet<Book>("Books");
                 var movieStar = builder.EntitySet<MovieStar>("MovieStars").EntityType;
                 movieStar.HasOptional(_ => _.Movie,
                     (person, movie) => person.MovieId == movie.ID, movie => movie.Stars);

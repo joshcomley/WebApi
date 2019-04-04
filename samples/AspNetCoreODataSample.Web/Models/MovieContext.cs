@@ -28,6 +28,7 @@ namespace AspNetCoreODataSample.Web.Models
         public DbSet<Movie> Movies { get; set; }
         public DbSet<MovieStar> MovieStars { get; set; }
         public DbSet<Place> Places { get; set; }
+        public DbSet<Book> Books { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
