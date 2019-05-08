@@ -237,10 +237,10 @@ namespace Microsoft.AspNet.OData.Query.Expressions
 
             Expression filterPredicate = null;
             // TODO: Once https://github.com/OData/odata.net/pull/1298 has been accepted
-            //if (node.FilterOption != null)
-            //{
-            //    filterPredicate = FilterBinder.Bind(node.FilterOption, elementType, Model, InternalAssembliesResolver, QuerySettings);
-            //}
+            if (node.FilterOption != null)
+            {
+                filterPredicate = FilterBinder.Bind(node.FilterOption, elementType, Model, InternalAssembliesResolver, QuerySettings);
+            }
 
             MethodInfo countMethod;
 

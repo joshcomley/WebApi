@@ -11,7 +11,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "efcore/Places?$orderby=geo.distance(Location, geography'POINT(-2.2804653 52.1965984)')",
+      "launchUrl": "efcore/Movies?$filter=Stars/$count($filter=contains(FirstName,'axxxxxxxxxxrn')) ge 1",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
