@@ -17,6 +17,13 @@ namespace AspNetCoreODataSample.Web.Models
             {
                 var builder = new ODataConventionModelBuilder();
                 builder.EntitySet<Movie>("Movies");
+                builder.EntitySet<MovieLanguage>("MovieLanguages");
+                builder.EntityType<MovieLanguage>()
+                    .HasKey(_ => new
+                    {
+                        _.MovieId,
+                        _.LanguageId
+                    });
                 builder.EntitySet<Place>("Places");
                 builder.EntitySet<Person>("People");
                 builder.EntitySet<Book>("Books");

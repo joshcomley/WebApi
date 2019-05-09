@@ -177,16 +177,21 @@ namespace Microsoft.AspNet.OData.Routing.Conventions
                 // so for multiple keys, the parameter name is "keyId1, keyId2..."
                 // for navigation property, the parameter name is "relatedKeyId1, relatedKeyId2 ..."
                 string newKeyName;
-                if (alternateKey || keyCount > 1)
+                if (alternateKey)
                 {
                     newKeyName = keyName + keyValuePair.Key;
                 }
-                else
+                else if(keyCount == 1)
                 {
                     newKeyName = keyName;
                 }
+                else
+                {
+                    newKeyName = keyValuePair.Key;
+                }
 
                 AddKeyValues(newKeyName, keyValuePair.Value, keyProperty.Type, controllerContext.RouteData, routingConventionsStore);
+                AddKeyValues($"{keyName}:{keyValuePair.Key}", keyValuePair.Value, keyProperty.Type, controllerContext.RouteData, routingConventionsStore);
             }
         }
 

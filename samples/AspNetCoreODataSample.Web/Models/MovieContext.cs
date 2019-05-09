@@ -27,6 +27,8 @@ namespace AspNetCoreODataSample.Web.Models
 
         public DbSet<Movie> Movies { get; set; }
         public DbSet<MovieStar> MovieStars { get; set; }
+        public DbSet<Language> Languages { get; set; }
+        public DbSet<MovieLanguage> MovieLanguages { get; set; }
         public DbSet<Place> Places { get; set; }
         public DbSet<Book> Books { get; set; }
 
@@ -36,6 +38,11 @@ namespace AspNetCoreODataSample.Web.Models
             {
                 _.FirstName,
                 _.LastName
+            });
+            modelBuilder.Entity<MovieLanguage>().HasKey(_ => new
+            {
+                _.MovieId,
+                _.LanguageId
             });
             modelBuilder.Entity<Movie>().Property(_ => _.Price).HasColumnType("decimal(18,2)");
             base.OnModelCreating(modelBuilder);

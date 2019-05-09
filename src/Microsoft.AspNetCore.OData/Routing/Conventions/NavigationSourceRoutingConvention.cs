@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OData.UriParser;
 
 namespace Microsoft.AspNet.OData.Routing.Conventions
 {
@@ -53,10 +54,22 @@ namespace Microsoft.AspNet.OData.Routing.Conventions
                 if (actionDescriptors != null)
                 {
                     string actionName = SelectAction(routeContext, controllerResult, actionDescriptors);
+                    var path = routeContext.HttpContext.ODataFeature().Path;
+                    bool hasKey = path.Segments.Count > 0 && path.Segments.Last() is KeySegment;
                     if (!String.IsNullOrEmpty(actionName))
                     {
-                        return actionDescriptors.Where(
-                            c => String.Equals(c.ActionName, actionName, StringComparison.OrdinalIgnoreCase));
+                        var descriptors = actionDescriptors.Where(
+                            c => 
+                                String.Equals(c.ActionName, actionName, StringComparison.OrdinalIgnoreCase) 
+                            //&& (!hasKey || c.Parameters.Any())
+                        ).ToArray();
+                        var descriptorsWithParameters = descriptors.Where(_ => _.Parameters.Any()).ToArray();
+                        if (hasKey && descriptorsWithParameters.Any())
+                        {
+                            return descriptorsWithParameters;
+                        }
+
+                        return descriptors;
                     }
                 }
             }

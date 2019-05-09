@@ -12,6 +12,7 @@ namespace AspNetCoreODataSample.Web.Models
 {
     public class Movie
     {
+        public List<MovieLanguage> Languages { get; set; }
         public int ID { get; set; }
 
         public List<MovieStar> Stars { get; set; }

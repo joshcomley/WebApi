@@ -11,7 +11,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "efcore/Movies?$filter=Stars/$count($filter=contains(FirstName,'axxxxxxxxxxrn')) ge 1",
+      "launchUrl": "efcore/MovieLanguages(MovieId=1,LanguageId=1)",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
